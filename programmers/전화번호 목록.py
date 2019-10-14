@@ -1,5 +1,7 @@
-# 시간복잡도 O(n^2)
+# 시간복잡도 O(n^3)
 def solution(phone_book):
+    # 한 문자열이 다른 문자열안에 있는 확인하고
+    # index가 0인지, 즉 접두어인지 확인.
     for i in range(len(phone_book)):
         for j in range(len(phone_book)):
             if i == j:

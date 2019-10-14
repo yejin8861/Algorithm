@@ -10,7 +10,6 @@ def solution(genres, plays):
     for i, li in enumerate(zip_list):
         cnt[li[0]] += li[1]
         music[li[0]].append((li[1], i))
-
     # Descending order by playing number
     cnt = sorted(cnt.items(), key=lambda x: x[1], reverse=True)
 

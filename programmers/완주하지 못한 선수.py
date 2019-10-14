@@ -3,7 +3,6 @@ from collections import Counter
 
 def solution(participant, completion):
     a = Counter(participant) - Counter(completion)
-    # print(list(a.keys())[0])
     return list(a.keys())[0]
 
 if __name__ == '__main__':
