@@ -6,7 +6,6 @@ def make_perm(n, numbers):
         string.append("".join([str(perm[i]) for i in range(len(perm))]))
     return list(map(int, string))  # 문자열 순열을 int형으로 변환
 
-
 def is_prime(num):
     for i in range(2, int(num**0.5)+1):  # 루트 num까지만 비교, 그 이상의 케이스는 중복.
         if num % i == 0:
@@ -32,8 +31,10 @@ def solution(numbers):
         else:
             continue
 
+    print(answer)
     return answer
 
 
 if __name__ == '__main__':
     solution("17")
+    # solution("100110")
