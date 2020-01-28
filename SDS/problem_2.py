@@ -47,7 +47,7 @@ def solution():
 
 
     answer = str(answer).replace(',','')
-    print(answer)
+    # print(answer)
     return answer[1:-1]
 
 
