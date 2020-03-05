@@ -16,45 +16,38 @@ M개의 나무, 같은 칸에 여러 개의 나무 가능
 K년이 지난 후 땅에 살아있는 나무 개수 출력
 */
 #include<cstdio>
-#include<vector>
+#include<queue>
 #include<algorithm>
+#define p pair<int,int>
 using namespace std;
 int N, M, K;
-struct node {
-    int y, x, z;
-};
+
 int A[12][12]; // 추가되는 양분
 int map[12][12]; // 땅
 int dy[] = { -1,-1,-1,0,0,1,1,1 };
 int dx[] = { -1,0,1,-1,1,-1,0,1 };
-vector<int> tree[12][12];
-vector<node> growth;
-vector<node> dead;
+deque<pair<int, p>> tree;
+deque<pair<int, p>> dead;
+deque<pair<int, p>> growth;
 
 void spring() {
-    int age = 0;
-    for (int i = 1; i <= N; i++) {
-        for (int j = 1; j <= N; j++) {
-            if (tree[i][j].empty()) continue;
+    int s = tree.size();
+    for (int i = 0; i < s; i++) {
+        int y = tree.front().second.first;
+        int x = tree.front().second.second;
+        int age = tree.front().first;
+        tree.pop_front();
 
-            // [y,x]에 나무가 있으면
-            vector<int> temp;
-            
-            sort(tree[i][j].begin(), tree[i][j].end());
-            for (int k = 0; k < tree[i][j].size(); k++) {
-                // 양분을 먹을 수 있는지 확인
-                age = tree[i][j][k];
-                if (map[i][j] >= age) {
-                    map[i][j] -= age;
-                    temp.push_back(age + 1);
-                    if ((age+1) % 5 == 0) { // 가을에 번식할 나무 저장
-                        growth.push_back({ i,j,age });
-                    }
-                }
-                else
-                    dead.push_back({i,j,age});
-            }
-            tree[i][j] = temp; // 나무 갱신
+        // 양분 섭취 가능
+        if (map[y][x] >= age) {
+            map[y][x] -= age;
+            tree.push_back({ age + 1, {y,x} });
+            /*if ((age + 1) % 5 == 0) {
+                growth.push_back({ age + 1,{y,x} });
+            }*/
+        }
+        else { // 불가능
+            dead.push_back({ age,{y,x} });
         }
     }
     return;
@@ -62,23 +55,29 @@ void spring() {
 
 void summer() {
     // 죽은 나무 자리에 양분 추가
-    for (int i = 0; i < dead.size(); i++) {
-        int r = dead[i].y;
-        int c = dead[i].x;
-        map[r][c] += dead[i].z / 2;
+    while (!dead.empty()) {
+        int y = dead.front().second.first;
+        int x = dead.front().second.second;
+        int age = dead.front().first;
+        dead.pop_front();
+
+        map[y][x] += age / 2;
     }
     return;
 }
 
 void autumn() {
-    for (int i = 0; i < growth.size(); i++) {
+    while (!growth.empty()) {
+        int y = growth.front().second.first;
+        int x = growth.front().second.second;
+        int age = growth.front().first;
+        growth.pop_front();
+
         for (int k = 0; k < 8; k++) {
-            int ny = growth[i].y + dy[k];
-            int nx = growth[i].x + dx[k];
-
+            int ny = y + dy[k];
+            int nx = x + dx[k];
             if (ny<1 || ny>N || nx<1 || nx>N) continue;
-
-            tree[ny][nx].push_back(1);
+            tree.push_front({ 1,{ny,nx} });
         }
     }
     return;
@@ -94,9 +93,8 @@ void winter() {
 }
 
 int simulation() {
+    sort(tree.begin(), tree.end());
     while (K--) {
-        dead.clear();
-        growth.clear();
         spring(); // 봄
         summer(); // 여름
         autumn(); // 가을
@@ -104,12 +102,7 @@ int simulation() {
     }
 
     // 나무 개수 구하기
-    int ans = 0;
-    for (int i = 1; i <= N; i++) 
-        for (int j = 1; j <= N; j++)
-            ans += tree[i][j].size();
-    
-    return ans;
+    return tree.size();
 }
 
 int main() {
@@ -123,7 +116,7 @@ int main() {
     for (int i = 1; i <= M; i++) {
         int r, c, z;
         scanf("%d %d %d", &r, &c, &z);
-        tree[r][c].push_back(z);
+        tree.push_back({ z,{r,c} });
     }
 
     printf("%d",simulation());
