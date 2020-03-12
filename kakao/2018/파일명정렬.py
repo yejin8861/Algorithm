@@ -19,7 +19,7 @@ def make_dictionary(files):
     return dic
 
 def solution(files):
-    # dic[file] = [index, HEAD, NUMBER]
+    # dic[file] = [HEAD, NUMBER]
     dic = make_dictionary(files)
     dic = sorted(dic.items(), key = lambda x: (x[1][0],x[1][1]))
 
