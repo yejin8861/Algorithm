@@ -67,26 +67,25 @@ int bfs() {
                 q.push({ ny,nx });
                 visited[ny][nx] = { Curtime + 1, Curcolor };
             }
-            // 1. 현재 color가 빨간색이면서 같은 시간에 초록색 땅에 퍼지는 경우
+            // 2. 현재 color가 빨간색이면서 같은 시간에 초록색 땅에 퍼지는 경우
             else if (Curcolor == RED && visited[ny][nx].color == GREEN &&
                 visited[ny][nx].time == Curtime + 1){
                 // 꽃 피우기
                 result++;
                 visited[ny][nx].color = FLOWER;
             }
-            // 2. 현재 color가 초록색이면서 같은 시간에 빨간색 땅에 퍼지는 경우
+            // 3. 현재 color가 초록색이면서 같은 시간에 빨간색 땅에 퍼지는 경우
             else if (Curcolor == GREEN && visited[ny][nx].color == RED &&
                 visited[ny][nx].time == Curtime + 1) {
                 // 꽃 피우기
                 result++;
                 visited[ny][nx].color = FLOWER;
             }
-
         }
     }
-
     return result;
 }
+
 
 void dfs_red(int idx, int cnt) {
     if (cnt == R) {
@@ -105,6 +104,7 @@ void dfs_red(int idx, int cnt) {
     }
 }
 
+
 void dfs_green(int idx, int cnt) {
     if (cnt == G) {
         dfs_red(0, 0);
@@ -120,6 +120,7 @@ void dfs_green(int idx, int cnt) {
         green.pop_back();
     }
 }
+
 
 int main() {
     scanf("%d %d %d %d", &N, &M, &G, &R);
