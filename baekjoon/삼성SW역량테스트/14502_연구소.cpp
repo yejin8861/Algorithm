@@ -1,74 +1,75 @@
+/*
+[문제]
+크기가 NxM인 연구소가 있다.
+0: 빈 칸, 1: 벽, 2: 바이러스가 있는 곳이다.
+바이러스는 상하좌우로 인접한 빈 칸으로 모두 퍼져나갈 수 있다.
+
+[출력]
+벽 3개를 세워 얻을 수 있는 안전 영역 크기의 최댓값을 구하라.
+*/
+
+
 #include<cstdio>
 #include<cstring>
-#include<algorithm>
 #include<vector>
 #include<queue>
+#include<algorithm>
+#define MAX 8
 using namespace std;
-
+struct node {
+    int y, x;
+};
 int N, M;
-int map[9][9];
+int TotalCnt, ans;
+int map[MAX][MAX];
+int visited[MAX][MAX];
 int dy[] = { -1,1,0,0 };
 int dx[] = { 0,0,-1,1 };
-int visited[9][9];
-int ans;
-vector<pair<int, int>> virus;
+vector<node> virus;
 
-void count_safe() {
-    // 바이러스 퍼지기 전 map복사
-    int temp_map[9][9];
-    memcpy(temp_map, map, sizeof(map));
-    memset(visited, 0, sizeof(visited));
-
-    // 바이러스 퍼뜨리기
-    queue<pair<int, int>> q;
-    for (int i = 0; i < virus.size(); i++) {
-        q.push(virus[i]);
-        while (!q.empty()) {
-            int y = q.front().first;
-            int x = q.front().second; q.pop();
-            visited[y][x] = true;
-
-            for (int k = 0; k < 4; k++) {
-                int ny = y + dy[k];
-                int nx = x + dx[k];
-
-                if (ny < 0 || ny >= N || nx < 0 || nx >= M ||
-                    map[ny][nx] == 1 || visited[ny][nx]) continue;
-                temp_map[ny][nx] = 2;
-                q.push(make_pair(ny, nx));
-            }
-        }
-    }
-
-    // 안전 영역 크기 구하기
+int bfs() {
     int cnt = 0;
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < M; j++) {
-            if (temp_map[i][j] == 0) cnt++;
+    queue<node> q;
+    for (auto next : virus) {
+        q.push(next);
+        visited[next.y][next.x] = 1;
+    }
+
+    while (!q.empty()) {
+        int y = q.front().y, x = q.front().x; q.pop();
+        for (int k = 0; k < 4; k++) {
+            int ny = y + dy[k], nx = x + dx[k];
+            if (ny < 0 || ny >= N || nx < 0 || nx >= M ||
+                map[ny][nx]>0 || visited[ny][nx]) continue;
+            q.push({ ny,nx });
+            visited[ny][nx] = 1;
+            cnt++;
         }
     }
-    ans = max(ans, cnt);
-    return;
+    return cnt;
 }
 
-void dfs(int y, int x, int cnt) {
-    if (cnt == 3) { // 2. 벽이 3개 세워지면 안전 영역 크기 구하기
-        count_safe();
+void choice_wall(int y, int x, int cnt) {
+    if (cnt == 3) { // 벽이 3개가 되면
+        memset(visited, 0, sizeof(visited));
+        int cnt = bfs(); // 바이러스 퍼뜨리기
+        // 안전 영역 최대 크기 구하기
+        ans = max(ans, TotalCnt - cnt);
         return;
     }
-    int j = x + 1;
-    for (int i = y; i < N; i++) {
-        while (j < M) {
-            if (map[i][j] == 0) {
-                map[i][j] = 1;
-                dfs(i, j, cnt + 1);
-                map[i][j] = 0;
-            }
-            j++;
+    while (y < N) {
+        if (map[y][x] == 0) {
+            // 벽세우기
+            map[y][x] = 1;
+            choice_wall(y, x, cnt + 1);
+            map[y][x] = 0;
         }
-        j = 0;
+        x++;
+        if (x >= M) {
+            y++;
+            x = 0;
+        }
     }
-    return;
 }
 
 int main() {
@@ -76,20 +77,12 @@ int main() {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M; j++) {
             scanf("%d", &map[i][j]);
-            if (map[i][j] == 2) {
-                virus.push_back(make_pair(i, j));
-            }
+            if (map[i][j] == 0) TotalCnt++;
+            else if (map[i][j] == 2) virus.push_back({ i,j });
         }
     }
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < M; j++) {
-            if (map[i][j] != 0) continue;
-            // 1. 벽 세우기
-            map[i][j] = 1;
-            dfs(i, j, 1);
-            map[i][j] = 0;
-        }
-    }
+    TotalCnt -= 3;
+    choice_wall(0, 0, 0);
     printf("%d", ans);
     return 0;
 }
