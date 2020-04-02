@@ -28,12 +28,12 @@ int R, C, T;
 int dy[] = { -1,1,0,0 };
 int dx[] = { 0,0,-1,1 };
 int map[MAX][MAX];
+int air;
 vector<node> Air_fresh;
 
 
 void spread() {
-    int temp[MAX][MAX];
-    memset(temp, 0, sizeof(temp));
+    int temp[MAX][MAX] = {};
     
     for (int r = 1; r <= R; r++) {
         for (int c = 1; c <= C; c++) {
@@ -70,16 +70,16 @@ void up_rotate() {
         map[1][c - 1] = map[1][c];
     }
     // up
-    for (int r = 2; r <= Air_fresh[0].y; r++) {
+    for (int r = 2; r <= air; r++) {
         map[r - 1][C] = map[r][C];
     }
     // right 
     for (int c = C - 1; c > 1; c--) {
-        map[Air_fresh[0].y][c + 1] = map[Air_fresh[0].y][c];
+        map[air][c + 1] = map[air][c];
     }
-    map[Air_fresh[0].y][2] = 0;
+    map[air][2] = 0;
     // down
-    for (int r = Air_fresh[0].y - 2; r > 1; r--) {
+    for (int r = air - 2; r > 1; r--) {
         map[r + 1][1] = map[r][1];
     }
     map[2][1] = t;
@@ -93,16 +93,16 @@ void down_rotate() {
         map[R][c - 1] = map[R][c];
     }
     // down
-    for (int r = R - 1; r >= Air_fresh[1].y; r--) {
+    for (int r = R - 1; r >= air+1; r--) {
         map[r + 1][C] = map[r][C];
     }
     // right
     for (int c = C - 1; c > 1; c--) {
-        map[Air_fresh[1].y][c + 1] = map[Air_fresh[1].y][c];
+        map[air+1][c + 1] = map[air+1][c];
     }
-    map[Air_fresh[1].y][2] = 0;
+    map[air+1][2] = 0;
     // up
-    for (int r = Air_fresh[1].y+2; r < R; r++) {
+    for (int r = air+1+2; r < R; r++) {
         map[r - 1][1] = map[r][1];
     }
     map[R-1][1] = t;
@@ -116,7 +116,7 @@ int main() {
         for (int c = 1; c <= C; c++) {
             scanf("%d", &map[r][c]);
             if (map[r][c] == -1) {
-                Air_fresh.push_back({ r,c });
+                air = r-1;
             }
         }
     }
