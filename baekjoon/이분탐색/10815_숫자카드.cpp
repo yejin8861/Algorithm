@@ -14,6 +14,21 @@ using namespace std;
 int N, M;
 vector<int> v;
 vector<int> num;
+
+bool binary_search(int n, int key) {
+    int start = 0;
+    int end = n - 1;
+
+    int mid;
+    while (start <= end) {
+        mid = (start + end) / 2;
+        if (v[mid] == key) return true;
+        else if (v[mid] < key) start = mid + 1;
+        else end = mid - 1;
+    }
+    return false;
+}
+
 int main() {
     scanf("%d", &N);
     int n;
@@ -30,8 +45,8 @@ int main() {
 
     sort(v.begin(), v.end()); // 이분탐색을 할 경우 정렬이 되어있어야 한다.
     for (int n : num) {
-        auto lb = lower_bound(v.begin(), v.end(), n);
-        if (*lb == n) printf("1 ");
+        bool check = binary_search(N, n);
+        if (check) printf("1 ");
         else printf("0 ");
     }
     return 0;
