@@ -19,7 +19,7 @@ int main() {
         dp[i][1] = 1; // i를 1개의 수로 만드는 경우.
     }
 
-    // dp[n][k] = dp[n][k-1] + dp[n-1][k-1] ... + dp[0][0]
+    // dp[n][k] = dp[n][k-1] + dp[n-1][k-1] ... + dp[0][k-1]
     for (int n = 0; n <= N; n++) {
         for (int k = 2; k <= K; k++) {
             for (int i = 0; i <= n; i++) {
