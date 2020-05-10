@@ -3,7 +3,7 @@ def solution(s):
     for l in range(1, len(s) // 2 + 1):
         sum = 0
         cnt = 1
-        for i in range(0, len(s), l):
+        for i in range(0, len(s), l): # l길이씩 문자열 비교
             if s[i:i+l] == s[i+l:i+2*l]:
                 cnt += 1
             else:
